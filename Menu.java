@@ -13,17 +13,19 @@ public class Menu extends JFrame {
     private JButton btnStart;
     private ImageIcon image;
     public Menu(){
-        setTitle("Welcome to crossWord!");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(400, 400);
-        setLocationRelativeTo(null);
-        setVisible(true);
-
-        image = new ImageIcon("sfondoGioco.png");
+    	setLayout(null);
+    	
+    	image = new ImageIcon("GuessTheWorld.jpeg");
         lblImage = new JLabel(image);
         setContentPane(lblImage);
 
         btnStart = new JButton("START");
+        btnStart.setBackground(new Color(255, 215, 0));
+        btnStart.setOpaque(true);
+        btnStart.setBorderPainted(false);
+        btnStart.setFont(new Font("Arial", Font.BOLD, 20));
+       // btnStart.setBounds(150, 200, 100, 30);
+        btnStart.setBounds(900, 700, 100, 30);
         btnStart.addActionListener(e ->{
         	int rand = new Random().nextInt(5) + 1, rows = 0;
         	String file = "" + rand + ".txt", line = null, nextLine = null;
@@ -52,8 +54,13 @@ public class Menu extends JFrame {
         });
 
         add(btnStart);
-        btnStart.setBackground(Color.MAGENTA);
-        btnStart.setBounds(150, 200, 100, 30);
+        
+        setTitle("Welcome to crossWord!");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
+        setLocationRelativeTo(null);
+        setResizable(false);
+        setVisible(true);
     }
 
     public static void main(String[] args) {
