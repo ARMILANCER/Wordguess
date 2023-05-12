@@ -1,6 +1,8 @@
 
 import java.awt.*;
 import java.io.*;
+import java.util.Random;
+
 import javax.swing.*;
 
 /*manca da fare che quando si indovina una parola tutta la linea diventa verde e non solo quando le si indovinano tutte
@@ -12,19 +14,34 @@ public class GUI extends JFrame{
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private JPanel pnlCenter, pnlSouth, pnlBtn, pnlWest;
+	private JPanel pnlCenter, pnlSouth, pnlBtn, pnlWest, pnlHelp, pnlShop, pnlNorth;
 	private JTextField[][] tf;
 	private JLabel[][] lbl;
+	private JLabel lblHelp, lblPoints;
 	private JButton[] btnHint;
-	private JButton btnCheck, btnPrevious, btnNext;
+	private JButton btnCheck, btnHelp, btnShop, btnStop;//, btnPrevious, btnNext;
 	private JTextArea ta;
+	private Timer timer;
+	private int nHelps = 3;
+	private int points = 0;
+	private final String[] packs = {"2 helps: 20 points", "6 helps: 50 points", "12 helps: 85 points", "32 helps: 150 points", "50 helps, 200 points"};
 	
 	public GUI(String file, int rows, int columns) {
 		setTitle("Game ---");
 		setLocationRelativeTo(null);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setSize(400, 400);
+		setExtendedState(JFrame.MAXIMIZED_BOTH);
 		setLayout(new BorderLayout());
+		
+		pnlNorth = new JPanel(new BorderLayout());
+		
+		timer = new Timer();
+		btnStop = new JButton("stop");
+		btnStop.addActionListener(e -> timer.stop());
+		
+		pnlNorth.add(timer, BorderLayout.WEST);
+		pnlNorth.add(btnStop, BorderLayout.CENTER);
+		
 		
 		pnlCenter = new JPanel(new GridLayout(rows, columns));
 		
@@ -60,6 +77,8 @@ public class GUI extends JFrame{
 					
 				}
 			}
+			
+			reader.close();
 		}catch(IOException e) {
 			e.printStackTrace();
 		}
@@ -67,6 +86,7 @@ public class GUI extends JFrame{
 		pnlSouth = new JPanel(new GridLayout(2, 1));
 		pnlBtn = new JPanel(new BorderLayout());
 		pnlBtn.setBackground(Color.BLUE);
+		pnlHelp = new JPanel(new GridLayout(2, 1));
 		
 		btnCheck = new JButton("Check");
 		btnCheck.setBackground(Color.BLUE);
@@ -106,36 +126,108 @@ public class GUI extends JFrame{
 			}
 		});
 		
-		btnPrevious = new JButton("<--");
-		btnPrevious.setBackground(Color.BLUE);
-		btnPrevious.setForeground(new Color(255, 215, 0));
-		btnPrevious.setOpaque(true);
-		btnPrevious.setBorderPainted(false);
-		btnPrevious.setFont(new Font("Arial", Font.BOLD, 20));
-		btnPrevious.addActionListener(e ->{
-			 
-         
+		lblHelp = new JLabel("Helps remaining: " + nHelps);
+		lblHelp.setOpaque(true);
+		lblHelp.setBackground(Color.BLUE);
+		lblHelp.setForeground(new Color(255, 215, 0));
+		
+		btnHelp = new JButton();
+		btnHelp.setIcon(new ImageIcon("lampadina.jpg"));
+		btnHelp.setBackground(new Color(255, 215, 0));
+		btnHelp.setBorderPainted(false);
+		btnHelp.setOpaque(true);
+		btnHelp.addActionListener(e ->{
+			if(nHelps > 0) {
+				int n, m;
+	
+				for(int i = 0 ; i < 3; i++) {
+					boolean different = false;
+					
+					while(different == false) {
+						n = new Random().nextInt(rows);
+						m = new Random().nextInt(columns);
+						
+						if(tf[n][m].getText().equals("")) {
+							tf[n][m].setText(lbl[n][m].getText());
+							tf[n][m].setBackground(Color.YELLOW);
+							tf[n][m].setEditable(false);
+							different = true;
+						}
+					}
+				}
+				
+				nHelps--;
+				lblHelp.setText("Helps remaining: " + nHelps);
+			}else {
+				JOptionPane.showMessageDialog(null, "Helps finished, buy more", "Conferma" , JOptionPane. INFORMATION_MESSAGE);
+			}
 		});
 		
-		btnNext = new JButton("-->");
-		btnNext.setBackground(Color.BLUE);
-		btnNext.setForeground(new Color(255, 215, 0));
-		btnNext.setOpaque(true);
-		btnNext.setBorderPainted(false);
-		btnNext.setFont(new Font("Arial", Font.BOLD, 20));
-		btnNext.addActionListener(e ->{
+		pnlHelp.add(btnHelp);
+		pnlHelp.add(lblHelp);
+		
+		pnlShop = new JPanel(new GridLayout(2, 1));
+		
+		lblPoints = new JLabel("Total points: " + points);
+		lblPoints.setOpaque(true);
+		lblPoints.setBackground(Color.BLUE);
+		lblPoints.setForeground(new Color(255, 215, 0));
+		
+		btnShop = new JButton("Shop");
+		btnShop.setBackground(Color.BLUE);
+		btnShop.setForeground(new Color(255, 215, 0));
+		btnShop.setOpaque(true);
+		btnShop.setBorderPainted(false);
+		btnShop.setFont(new Font("Arial", Font.BOLD, 20));
+		btnShop.addActionListener(e ->{
+			String selectedPack = (String) JOptionPane.showInputDialog(this, "Select a pack", "Options", JOptionPane.PLAIN_MESSAGE, null, packs, packs[0]);
+			int price = 0;
+			int h = 0;
+			switch(selectedPack) {
+			case "2 helps: 20 points":
+				price = 20;
+				h = 2;
+				break;
+			case "6 helps: 50 points":
+				price = 50;
+				h = 6;
+				break;
+			case "12 helps: 85 points":
+				price = 85;
+				h = 12;
+				break;
+			case "32 helps: 150 points":
+				price = 150;
+				h = 32;
+				break;
+			case "50 helps, 200 points":
+				price = 200;
+				h = 50;
+				break;
+			}
 			
+			if(points >= price) {
+				nHelps += h;
+				points -= price;
+				lblHelp.setText("Helps remaining: " + nHelps);
+				lblPoints.setText("Total points: " + points);
+				JOptionPane.showMessageDialog(null, "You have purchased with success " + h + " helps!\n" + "Helps remaining: " + nHelps + "\nPoints remaining: " + points, "confirms" , JOptionPane. INFORMATION_MESSAGE);
+			}else {
+				JOptionPane.showMessageDialog(null, "Insufficient points!", "confirms" , JOptionPane. INFORMATION_MESSAGE);
+			}
 		});
 		
+		pnlShop.add(btnShop);
+		pnlShop.add(lblPoints);
+
 		ta = new JTextArea();
 		ta.setBackground(Color.BLUE);
 		ta.setForeground(Color.WHITE);
-		//ta.setEditable(false);
+		ta.setEditable(false);
 		
 		pnlBtn.add(btnCheck, BorderLayout.CENTER);
-		pnlBtn.add(btnPrevious, BorderLayout.WEST);
-		pnlBtn.add(btnNext, BorderLayout.EAST);
-		
+		pnlBtn.add(pnlHelp, BorderLayout.WEST);
+		pnlBtn.add(pnlShop, BorderLayout.EAST);
 		pnlSouth.add(pnlBtn);
 		pnlSouth.add(ta);
 		
@@ -147,38 +239,40 @@ public class GUI extends JFrame{
 			pnlWest.add(btnHint[i]);
 			int line = i;
 			btnHint[i].addActionListener(e ->{
-				String word = "";
-				
-				
-				for(int j = 0; j < columns; j++) {
-					word += lbl[line][j].getText();
-				}
-				
+				int count = 0;
+				String nextLine;
 				try {
+					boolean exit = false;
 					BufferedReader reader = new BufferedReader(new FileReader(file));
-					String nextLine = reader.readLine();
-					boolean stop = false;
+					 nextLine = reader.readLine();
 					
-					while(stop == false) {
-						if(nextLine.equals(word)) {
-							nextLine = reader.readLine();
-							while(!nextLine.equals("stop")) {
-								ta.append(nextLine);
+					while(exit == false) {
+						if(nextLine.length() == columns) {
+							if(line == count) {
+								nextLine = reader.readLine();
+								while(!nextLine.contains("stop")) {
+									ta.append(nextLine + " " + line + " " + count + " \n");
+									nextLine = reader.readLine();
+								}
+								exit = true;
+							}else {
+								count++;
+								//ta.append("qua non va::" + line + " " + count + " " + nextLine + "\n");
 								nextLine = reader.readLine();
 							}
-							stop = true;
+						}else {
+							//ta.append("ADsafaefdsf\n");
+							nextLine = reader.readLine();
 						}
-						
 					}
 					reader.close();
 				}catch(IOException e1) {
 					e1.printStackTrace();
-				}
-				
+				}	
 			});
-		}
+		}	
 		
-		
+		add(pnlNorth, BorderLayout.NORTH);
 		add(pnlCenter, BorderLayout.CENTER);
 		add(pnlSouth, BorderLayout.SOUTH);
 		add(pnlWest, BorderLayout.WEST);
