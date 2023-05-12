@@ -6,7 +6,9 @@ import java.util.Vector;
 
 import javax.swing.*;
 
-/*e
+/*
+CASE SENSITIVE
+NEX BLOCK
 */
 public class GUI extends JFrame {
 
@@ -15,10 +17,10 @@ public class GUI extends JFrame {
      *
      */
     private static final long serialVersionUID = 1L;
-    private JPanel pnlCenter, pnlSouth, pnlBtn, pnlWest, pnlHelp, pnlShop, pnlNorth;
+    private JPanel pnlCenter, pnlSouth, pnlBtn, pnlWest, pnlHelp, pnlShop, pnlNorth, pnlGame;
     private JTextField[][] tf;
     private JLabel[][] lbl;
-    private JLabel lblHelp, lblPoints;
+    private JLabel lblHelp, lblPoints, lblGame;
     private JButton[] btnHint;
     private JButton btnCheck, btnHelp, btnShop, btnStop;//, btnPrevious, btnNext;
     private JTextArea ta;
@@ -33,19 +35,36 @@ public class GUI extends JFrame {
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
+        setUndecorated(true);
         setLayout(new BorderLayout());
 
         pnlNorth = new JPanel(new BorderLayout());
+        pnlNorth.setBackground(Color.BLUE);
+        pnlGame = new JPanel(new FlowLayout());
+        pnlGame.setBackground(Color.BLUE);
+
+        lblGame = new JLabel("GuessTheWord");
+        lblGame.setOpaque(true);
+        lblGame.setBackground(Color.BLUE);
+        lblGame.setFont(new Font("Times new roman", Font.BOLD, 30));
+        lblGame.setForeground(new Color(255, 215, 0));
 
         timer = new Timer();
-        btnStop = new JButton("stop");
-        btnStop.addActionListener(e -> timer.stop());
+        timer.setOpaque(true);
+        timer.setBackground(Color.BLUE);
+        timer.setForeground(new Color(255, 215, 0));
+        timer.setFont(new Font("Arial", Font.BOLD, 20));
+       // btnStop = new JButton("stop");
+       // btnStop.addActionListener(e -> timer.stop());
 
+        pnlGame.add(lblGame, BorderLayout.CENTER);
+        pnlNorth.add(pnlGame, BorderLayout.CENTER);
         pnlNorth.add(timer, BorderLayout.WEST);
-        pnlNorth.add(btnStop, BorderLayout.CENTER);
+       // pnlNorth.add(btnStop, BorderLayout.CENTER);
 
 
         pnlCenter = new JPanel(new GridLayout(rows, columns));
+        pnlCenter.setBackground(Color.BLUE);
 
         lbl = new JLabel[rows][columns];
         tf = new JTextField[rows][columns];
@@ -86,6 +105,7 @@ public class GUI extends JFrame {
         }
 
         pnlSouth = new JPanel(new GridLayout(2, 1));
+        pnlSouth.setBackground(Color.BLUE);
         pnlBtn = new JPanel(new BorderLayout());
         pnlBtn.setBackground(Color.BLUE);
         pnlHelp = new JPanel(new GridLayout(2, 1));
@@ -257,7 +277,8 @@ public class GUI extends JFrame {
 
         ta = new JTextArea();
         ta.setBackground(Color.BLUE);
-        ta.setForeground(Color.WHITE);
+        ta.setForeground(new Color(255, 215, 0));
+        ta.setFont(new Font("Arial", Font.BOLD, 20));
         ta.setEditable(false);
 
         pnlBtn.add(btnCheck, BorderLayout.CENTER);
@@ -269,6 +290,8 @@ public class GUI extends JFrame {
         pnlWest = new JPanel(new GridLayout(rows, 1));
 
         btnHint = new JButton[rows];
+
+
         for (int i = 0; i < rows; i++) {
             btnHint[i] = new JButton("Level " + (i + 1));
             pnlWest.add(btnHint[i]);
