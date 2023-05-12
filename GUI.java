@@ -11,55 +11,86 @@ CASE SENSITIVE
 NEX BLOCK
 */
 public class GUI extends JFrame {
-
-
     /**
      *
      */
+
+
+
+
+    ///////
+    /// COMPONENT JFRAME
+    ///////
     private static final long serialVersionUID = 1L;
     private JPanel pnlCenter, pnlSouth, pnlBtn, pnlWest, pnlHelp, pnlShop, pnlNorth, pnlGame;
     private JTextField[][] tf;
     private JLabel[][] lbl;
     private JLabel lblHelp, lblPoints, lblGame;
     private JButton[] btnHint;
-    private JButton btnCheck, btnHelp, btnShop, btnStop;//, btnPrevious, btnNext;
+    private JButton btnCheck, btnHelp, btnShop, btnExit; //btnStop;, btnPrevious, btnNext;
     private JTextArea ta;
-    private Timer timer;
+
+    ///////
+    /// OTHERS
+    ///////
+    // number helps
     private int nHelps = 3;
+    // total points of the game
     private int points = 0;
+    // shop point's pack and cost
     private final String[] packs = {"2 helps: 20 points", "6 helps: 50 points", "12 helps: 85 points", "32 helps: 150 points", "50 helps, 200 points"};
+    // used in btnCheck to see if a line has already been completed
     private boolean[] done;
 
+    ///////
+    /// TIMER
+    ///////
+    // calculate the point with the game time
+    private Timer timer;
+
+    ///////
+    ///
+    ///////
     public GUI(String file, int rows, int columns) {
-        setTitle("GuessTheWord");
-        setLocationRelativeTo(null);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setExtendedState(JFrame.MAXIMIZED_BOTH);
-        setUndecorated(true);
+
         setLayout(new BorderLayout());
 
         pnlNorth = new JPanel(new BorderLayout());
-        pnlNorth.setBackground(Color.BLUE);
         pnlGame = new JPanel(new FlowLayout());
-        pnlGame.setBackground(Color.BLUE);
 
-        lblGame = new JLabel("GuessTheWord");
-        lblGame.setOpaque(true);
-        lblGame.setBackground(Color.BLUE);
-        lblGame.setFont(new Font("Times new roman", Font.BOLD, 30));
-        lblGame.setForeground(new Color(255, 215, 0));
+
+        pnlNorth.setBackground(Color.BLUE);
+        pnlGame.setBackground(Color.BLUE);
 
         timer = new Timer();
         timer.setOpaque(true);
         timer.setBackground(Color.BLUE);
         timer.setForeground(new Color(255, 215, 0));
         timer.setFont(new Font("Arial", Font.BOLD, 20));
+
+        lblGame = new JLabel("GuessTheWord");
+        lblGame.setOpaque(true);
+        lblGame.setBackground(Color.BLUE);
+        lblGame.setFont(new Font("Times new roman", Font.BOLD, 30));
+        lblGame.setForeground(new Color(255, 215, 0));
        // btnStop = new JButton("stop");
        // btnStop.addActionListener(e -> timer.stop());
 
+        btnExit = new JButton("Exit");
+        btnExit.setBackground(Color.BLUE);
+        btnExit.setForeground(new Color(255, 215, 0));
+        btnExit.setOpaque(true);
+        btnExit.setBorderPainted(false);
+        btnExit.setFont(new Font("Arial", Font.BOLD, 20));
+        btnExit.addActionListener(e ->{
+            System.exit(0);
+        });
+
         pnlGame.add(lblGame, BorderLayout.CENTER);
-        pnlNorth.add(pnlGame, BorderLayout.CENTER);
         pnlNorth.add(timer, BorderLayout.WEST);
+        pnlNorth.add(pnlGame, BorderLayout.CENTER);
+        pnlNorth.add(btnExit, BorderLayout.EAST);
+
        // pnlNorth.add(btnStop, BorderLayout.CENTER);
 
 
@@ -188,7 +219,8 @@ public class GUI extends JFrame {
 
         btnHelp = new JButton();
         btnHelp.setIcon(new ImageIcon("lampadina.jpeg"));
-        btnHelp.setBackground(new Color(255, 215, 0));
+        //btnHelp.setBackground(new Color(255, 215, 0));
+        btnHelp.setBackground(Color.BLUE);
         btnHelp.setBorderPainted(false);
         btnHelp.setOpaque(true);
         btnHelp.addActionListener(e -> {
@@ -288,6 +320,7 @@ public class GUI extends JFrame {
         pnlSouth.add(ta);
 
         pnlWest = new JPanel(new GridLayout(rows, 1));
+        pnlWest.setBackground(Color.BLUE);
 
         btnHint = new JButton[rows];
 
@@ -335,5 +368,8 @@ public class GUI extends JFrame {
         add(pnlSouth, BorderLayout.SOUTH);
         add(pnlWest, BorderLayout.WEST);
 
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
+        setUndecorated(true);
     }
 }
