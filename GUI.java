@@ -1,5 +1,10 @@
+package Game;
+
+import Listener.Shop;
 
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.*;
 import java.util.Random;
 import java.util.Vector;
@@ -11,13 +16,6 @@ CASE SENSITIVE
 NEX BLOCK
 */
 public class GUI extends JFrame {
-    /**
-     *
-     */
-
-
-
-
     ///////
     /// COMPONENT JFRAME
     ///////
@@ -36,17 +34,11 @@ public class GUI extends JFrame {
     // number helps
     private int nHelps = 3;
     // total points of the game
-    private int points = 0;
+    private int points = 10000;
     // shop point's pack and cost
-    private final String[] packs = {"2 helps: 20 points", "6 helps: 50 points", "12 helps: 85 points", "32 helps: 150 points", "50 helps, 200 points"};
+    //private final String[] packs = {"2 helps: 20 points", "6 helps: 50 points", "12 helps: 85 points", "32 helps: 150 points", "50 helps, 200 points"};
     // used in btnCheck to see if a line has already been completed
-    private boolean[] done;
-
-    ///////
-    /// TIMER
-    ///////
-    // calculate the point with the game time
-    private Timer timer;
+    private final boolean[] done;
 
     ///////
     ///
@@ -62,11 +54,17 @@ public class GUI extends JFrame {
         pnlNorth.setBackground(Color.BLUE);
         pnlGame.setBackground(Color.BLUE);
 
-        timer = new Timer();
+        ///////
+        /// TIMER
+        ///////
+        // calculate the point with the game time
+        Timer timer = new Timer();
         timer.setOpaque(true);
         timer.setBackground(Color.BLUE);
         timer.setForeground(new Color(255, 215, 0));
         timer.setFont(new Font("Arial", Font.BOLD, 20));
+
+
 
         lblGame = new JLabel("GuessTheWord");
         lblGame.setOpaque(true);
@@ -85,7 +83,6 @@ public class GUI extends JFrame {
         btnExit.addActionListener(e ->{
             System.exit(0);
         });
-
         pnlGame.add(lblGame, BorderLayout.CENTER);
         pnlNorth.add(timer, BorderLayout.WEST);
         pnlNorth.add(pnlGame, BorderLayout.CENTER);
@@ -99,38 +96,40 @@ public class GUI extends JFrame {
 
         lbl = new JLabel[rows][columns];
         tf = new JTextField[rows][columns];
-        try {
-            BufferedReader reader = new BufferedReader(new FileReader(file));
-
-            for (int i = 0; i < rows; i++) {
+        //
+        Vector<String> question = new Vector<>();
+        // MAKE TABLE
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))){
+            boolean firtLine = true;
+            // i - 1 Because the first line contains the file dimension
+            for (int i = -1; i < rows; i++) {
+                String [] word;
                 String nextLine = reader.readLine();
-                boolean found = false, ok = false;
-                //nextLine = reader.readLine();
-                //boolean ok = true;
-
-                while (found == false) {
-                    if (nextLine.length() == columns) {
-
+                // word[0] -> contain the word word[1] -> contain the question
+                // jump the firsts line because the first line contains the file dimension
+                if (!firtLine) {
+                    word = nextLine.split(";");
+                    boolean found = false;
+                    question.add(word[1]);
+                        System.out.println(word[0]);
                         for (int j = 0; j < columns; j++) {
-                            lbl[i][j] = new JLabel(String.valueOf(nextLine.charAt(j)));
+                            int r=i,c = j;
+                            // serve per capire quando è finito il gioco
+                            lbl[i][j] = new JLabel(String.valueOf(word[0].charAt(j)));
                             lbl[i][j].setOpaque(true);
                             lbl[i][j].setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
+                            //
                             tf[i][j] = new JTextField();
+                            tf[i][j].setHorizontalAlignment(JTextField.CENTER);
                             tf[i][j].setOpaque(true);
                             tf[i][j].setBackground(Color.CYAN);
+
                             //pnlCenter.add(lbl[i][j]);
                             pnlCenter.add(tf[i][j]);
                         }
-                        found = true;
-
-                    } else {
-                        nextLine = reader.readLine();
-                    }
-
                 }
+                firtLine = false;
             }
-
-            reader.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -169,11 +168,11 @@ public class GUI extends JFrame {
                                     tf[i][n].setBackground(Color.green);
                                 }
                                 //num.
-                                if(done[i] == false) {
+                                if(!done[i]) {
                                     for (int s = 0; s < 3; s++) {
                                         boolean k = false;
 
-                                        while (k == false) {
+                                        while (!k) {
                                             int r = new Random().nextInt(rows);
                                             int c = new Random().nextInt(columns);
 
@@ -196,9 +195,9 @@ public class GUI extends JFrame {
                 }
             }
 
-            if (correct == true) {
-                Container c = getContentPane();
-                JPanel pnlCenter = (JPanel) c.getComponent(0);
+            if (correct) {
+               // Container c = getContentPane();
+                //JPanel pnlCenter = (JPanel) c.getComponent(0);
 
                 for (int i = 0; i < rows; i++) {
                     for (int j = 0; j < columns; j++) {
@@ -206,10 +205,10 @@ public class GUI extends JFrame {
                         pnlCenter.add(lbl[i][j]);
                     }
                 }
-
-                pnlCenter.revalidate();
-                pnlCenter.repaint();
             }
+
+            pnlCenter.revalidate();
+            pnlCenter.repaint();
         });
 
         lblHelp = new JLabel("Helps remaining: " + nHelps);
@@ -230,10 +229,9 @@ public class GUI extends JFrame {
                 for (int i = 0; i < 3; i++) {
                     boolean different = false;
 
-                    while (different == false) {
+                    while (!different) {
                         n = new Random().nextInt(rows);
                         m = new Random().nextInt(columns);
-
                         if (tf[n][m].getText().equals("")) {
                             tf[n][m].setText(lbl[n][m].getText());
                             tf[n][m].setBackground(Color.YELLOW);
@@ -266,42 +264,11 @@ public class GUI extends JFrame {
         btnShop.setOpaque(true);
         btnShop.setBorderPainted(false);
         btnShop.setFont(new Font("Arial", Font.BOLD, 20));
-        btnShop.addActionListener(e -> {
-            String selectedPack = (String) JOptionPane.showInputDialog(this, "Select a pack", "Options", JOptionPane.PLAIN_MESSAGE, null, packs, packs[0]);
-            int price = 0;
-            int h = 0;
-            switch (selectedPack) {
-                case "2 helps: 20 points":
-                    price = 20;
-                    h = 2;
-                    break;
-                case "6 helps: 50 points":
-                    price = 50;
-                    h = 6;
-                    break;
-                case "12 helps: 85 points":
-                    price = 85;
-                    h = 12;
-                    break;
-                case "32 helps: 150 points":
-                    price = 150;
-                    h = 32;
-                    break;
-                case "50 helps, 200 points":
-                    price = 200;
-                    h = 50;
-                    break;
-            }
-
-            if (points >= price) {
-                nHelps += h;
-                points -= price;
-                lblHelp.setText("Helps remaining: " + nHelps);
-                lblPoints.setText("Total points: " + points);
-                JOptionPane.showMessageDialog(null, "You have purchased with success " + h + " helps!\n" + "Helps remaining: " + nHelps + "\nPoints remaining: " + points, "confirms", JOptionPane.INFORMATION_MESSAGE);
-            } else {
-                JOptionPane.showMessageDialog(null, "Insufficient points!", "confirms", JOptionPane.INFORMATION_MESSAGE);
-            }
+        btnShop.addActionListener(e ->{
+            Shop shop = new Shop(points,nHelps,lblHelp,lblPoints);
+            shop.action();
+            nHelps = shop.getHelps();
+            points = shop.getPoints();
         });
 
         pnlShop.add(btnShop);
@@ -326,50 +293,22 @@ public class GUI extends JFrame {
 
 
         for (int i = 0; i < rows; i++) {
+            int j=i;
             btnHint[i] = new JButton("Level " + (i + 1));
             pnlWest.add(btnHint[i]);
-            int line = i;
             btnHint[i].addActionListener(e -> {
-                int count = 0;
-                String nextLine;
-                try {
-                    boolean exit = false;
-                    BufferedReader reader = new BufferedReader(new FileReader(file));
-                    nextLine = reader.readLine();
-
-                    while (exit == false) {
-                        if (nextLine.length() == columns) {
-                            if (line == count) {
-                                nextLine = reader.readLine();
-                                while (!nextLine.contains("stop")) {
-                                    ta.setText(nextLine);
-                                    nextLine = reader.readLine();
-                                }
-                                exit = true;
-                            } else {
-                                count++;
-                                //ta.append("qua non va::" + line + " " + count + " " + nextLine + "\n");
-                                nextLine = reader.readLine();
-                            }
-                        } else {
-                            //ta.append("ADsafaefdsf\n");
-                            nextLine = reader.readLine();
-                        }
-                    }
-                    reader.close();
-                } catch (IOException e1) {
-                    e1.printStackTrace();
-                }
+                ta.setText(question.get(j));
             });
         }
-
         add(pnlNorth, BorderLayout.NORTH);
         add(pnlCenter, BorderLayout.CENTER);
         add(pnlSouth, BorderLayout.SOUTH);
         add(pnlWest, BorderLayout.WEST);
 
+        // Set Frame
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setUndecorated(true);
+        setVisible(true);
     }
 }
