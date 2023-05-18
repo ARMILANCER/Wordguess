@@ -1,13 +1,14 @@
-package Game;
+package Interface;
 
+import Data.ResizeArray;
+import Home.StateMachine;
 import Listener.Shop;
 
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.*;
 import java.util.Random;
 import java.util.Vector;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.swing.*;
 
@@ -32,18 +33,29 @@ public class GUI extends JFrame {
     /// OTHERS
     ///////
     // number helps
-    private int nHelps = 3;
+    private int nHelps = 50;
     // total points of the game
-    private int points = 10000;
+    private int points = 0;
     // shop point's pack and cost
     //private final String[] packs = {"2 helps: 20 points", "6 helps: 50 points", "12 helps: 85 points", "32 helps: 150 points", "50 helps, 200 points"};
     // used in btnCheck to see if a line has already been completed
-    private final boolean[] done;
+    private boolean[] done;
+    private  int guessedWords=0;
+
+    // constructor data
+    private String file;
+    private int rows, columns;
+
+    // DATA
+    ResizeArray lvl = new ResizeArray();
 
     ///////
     ///
     ///////
-    public GUI(String file, int rows, int columns) {
+    public GUI() {
+        file = lvl.getCurrentFile();
+        rows = lvl.getRow();
+        columns = lvl.getColumns();
 
         setLayout(new BorderLayout());
 
@@ -71,8 +83,6 @@ public class GUI extends JFrame {
         lblGame.setBackground(Color.BLUE);
         lblGame.setFont(new Font("Times new roman", Font.BOLD, 30));
         lblGame.setForeground(new Color(255, 215, 0));
-       // btnStop = new JButton("stop");
-       // btnStop.addActionListener(e -> timer.stop());
 
         btnExit = new JButton("Exit");
         btnExit.setBackground(Color.BLUE);
@@ -87,9 +97,6 @@ public class GUI extends JFrame {
         pnlNorth.add(timer, BorderLayout.WEST);
         pnlNorth.add(pnlGame, BorderLayout.CENTER);
         pnlNorth.add(btnExit, BorderLayout.EAST);
-
-       // pnlNorth.add(btnStop, BorderLayout.CENTER);
-
 
         pnlCenter = new JPanel(new GridLayout(rows, columns));
         pnlCenter.setBackground(Color.BLUE);
@@ -113,7 +120,7 @@ public class GUI extends JFrame {
                     question.add(word[1]);
                         System.out.println(word[0]);
                         for (int j = 0; j < columns; j++) {
-                            int r=i,c = j;
+                            AtomicInteger c = new AtomicInteger(j);
                             // serve per capire quando è finito il gioco
                             lbl[i][j] = new JLabel(String.valueOf(word[0].charAt(j)));
                             lbl[i][j].setOpaque(true);
@@ -123,6 +130,9 @@ public class GUI extends JFrame {
                             tf[i][j].setHorizontalAlignment(JTextField.CENTER);
                             tf[i][j].setOpaque(true);
                             tf[i][j].setBackground(Color.CYAN);
+                            tf[i][j].addActionListener(e->{
+                                
+                            });
 
                             //pnlCenter.add(lbl[i][j]);
                             pnlCenter.add(tf[i][j]);
@@ -151,64 +161,102 @@ public class GUI extends JFrame {
         // CHECK
         btnCheck.addActionListener(e -> {
             boolean correct = true;
+            boolean alreadyIncremented = false;
+            int half = (int) rows/2,  threeQuarters = (int)rows * 3 / 4;
             for (int i = 0; i < rows; i++) {
                 int cont = 0;
                 for (int j = 0; j < columns; j++) {
                     if (tf[i][j].getText().equals(lbl[i][j].getText())) {
                         tf[i][j].setEditable(false);
                         tf[i][j].setBackground(Color.YELLOW);
-                        //lbl[i][j].setBackground(Color.GREEN.darker().brighter().brighter());
-
+                        lbl[i][j].setBackground(Color.GREEN.darker().brighter().brighter());
                         // GREEN IF COMPLETE
                         if (!tf[i][j].isEditable()) {
                             cont++;
                             // All columns are yellow
-                            if (cont == columns) {
+                            if(cont==columns) {
                                 for (int n = 0; n < columns; n++) {
                                     tf[i][n].setBackground(Color.green);
+                                    if(!alreadyIncremented) {
+                                        guessedWords++;
+                                        alreadyIncremented = true;
+                                    }
                                 }
                                 //num.
-                                if(!done[i]) {
-                                    for (int s = 0; s < 3; s++) {
-                                        boolean k = false;
+                                int max;
+                                if(guessedWords <= half)
+                                    max = 3;
+                                else if(guessedWords > half && guessedWords <= threeQuarters)
+                                    max = 1;
+                                else
+                                    max = 0;
+                                if(max != 0) {
+                                    if(done[i] == false) {
+                                        for (int s = 0; s < max; s++) {
+                                            boolean k = false;
 
-                                        while (!k) {
-                                            int r = new Random().nextInt(rows);
-                                            int c = new Random().nextInt(columns);
+                                            while (k == false) {
+                                                int r = new Random().nextInt(rows);
+                                                int c = new Random().nextInt(columns);
 
-                                            if (tf[r][c].getText().equals("")) {
-                                                tf[r][c].setText(lbl[r][c].getText());
-                                                tf[r][c].setBackground(Color.YELLOW);
-                                                tf[r][c].setEditable(false);
-                                                k = true;
-                                                done[i] = true;
+                                                if (tf[r][c].getText().equals("")) {
+                                                    tf[r][c].setText(lbl[r][c].getText());
+                                                    tf[r][c].setBackground(Color.YELLOW);
+                                                    tf[r][c].setEditable(false);
+                                                    lbl[i][j].setBackground(Color.GREEN.darker().brighter().brighter());
+                                                    k = true;
+                                                    done[i] = true;
+
+                                                    int check = 0;
+
+                                                    for(int p = 0; p < columns; p++) {
+                                                        if (!tf[i][j].isEditable()) {
+                                                            check++;
+                                                            // All columns are yellow
+                                                            if (check == columns) {
+                                                                for (int n = 0; n < columns; n++) {
+                                                                    tf[i][n].setBackground(Color.green);
+                                                                }
+                                                            }
+                                                        }else
+                                                            check = 0;
+                                                    }
+                                                }
                                             }
                                         }
                                     }
                                 }
                             }
                         } else cont = 0;
-                    } else {
-                        tf[i][j].setText(null);
-                        correct = false;
-                    }
+                    } else  tf[i][j].setText(null);
                 }
             }
 
+            for(int i = 0; i < rows; i++) {
+                for(int j = 0; j < columns; j++) {
+                    if(tf[i][j].isEditable())
+                        correct = false;
+                }
+            }
             if (correct) {
-               // Container c = getContentPane();
-                //JPanel pnlCenter = (JPanel) c.getComponent(0);
-
                 for (int i = 0; i < rows; i++) {
                     for (int j = 0; j < columns; j++) {
                         pnlCenter.remove(tf[i][j]);
                         pnlCenter.add(lbl[i][j]);
                     }
                 }
-            }
 
-            pnlCenter.revalidate();
-            pnlCenter.repaint();
+                pnlCenter.revalidate();
+                pnlCenter.repaint();
+                timer.stop();
+
+                try {
+                    StateMachine.ChangeWindow("game","winnerInterface");
+                    StateMachine.close("game");
+                } catch (Exception ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
         });
 
         lblHelp = new JLabel("Helps remaining: " + nHelps);
@@ -294,12 +342,13 @@ public class GUI extends JFrame {
 
         for (int i = 0; i < rows; i++) {
             int j=i;
-            btnHint[i] = new JButton("Level " + (i + 1));
+            btnHint[i] = new JButton("Row " + (i + 1));
             pnlWest.add(btnHint[i]);
             btnHint[i].addActionListener(e -> {
                 ta.setText(question.get(j));
             });
         }
+
         add(pnlNorth, BorderLayout.NORTH);
         add(pnlCenter, BorderLayout.CENTER);
         add(pnlSouth, BorderLayout.SOUTH);
