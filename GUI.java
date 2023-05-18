@@ -160,103 +160,108 @@ public class GUI extends JFrame {
 
         // CHECK
         btnCheck.addActionListener(e -> {
-            boolean correct = true;
-            boolean alreadyIncremented = false;
-            int half = (int) rows/2,  threeQuarters = (int)rows * 3 / 4;
-            for (int i = 0; i < rows; i++) {
-                int cont = 0;
-                for (int j = 0; j < columns; j++) {
-                    if (tf[i][j].getText().equals(lbl[i][j].getText())) {
-                        tf[i][j].setEditable(false);
-                        tf[i][j].setBackground(Color.YELLOW);
-                        lbl[i][j].setBackground(Color.GREEN.darker().brighter().brighter());
-                        // GREEN IF COMPLETE
-                        if (!tf[i][j].isEditable()) {
-                            cont++;
-                            // All columns are yellow
-                            if(cont==columns) {
-                                for (int n = 0; n < columns; n++) {
-                                    tf[i][n].setBackground(Color.green);
-                                    if(!alreadyIncremented) {
-                                        guessedWords++;
-                                        alreadyIncremented = true;
-                                    }
-                                }
-                                //num.
-                                int max;
-                                if(guessedWords <= half)
-                                    max = 3;
-                                else if(guessedWords > half && guessedWords <= threeQuarters)
-                                    max = 1;
-                                else
-                                    max = 0;
-                                if(max != 0) {
-                                    if(done[i] == false) {
-                                        for (int s = 0; s < max; s++) {
-                                            boolean k = false;
-
-                                            while (k == false) {
-                                                int r = new Random().nextInt(rows);
-                                                int c = new Random().nextInt(columns);
-
-                                                if (tf[r][c].getText().equals("")) {
-                                                    tf[r][c].setText(lbl[r][c].getText());
-                                                    tf[r][c].setBackground(Color.YELLOW);
-                                                    tf[r][c].setEditable(false);
-                                                    lbl[i][j].setBackground(Color.GREEN.darker().brighter().brighter());
-                                                    k = true;
-                                                    done[i] = true;
-
-                                                    int check = 0;
-
-                                                    for(int p = 0; p < columns; p++) {
-                                                        if (!tf[i][j].isEditable()) {
-                                                            check++;
-                                                            // All columns are yellow
-                                                            if (check == columns) {
-                                                                for (int n = 0; n < columns; n++) {
-                                                                    tf[i][n].setBackground(Color.green);
-                                                                }
-                                                            }
-                                                        }else
-                                                            check = 0;
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        } else cont = 0;
-                    } else  tf[i][j].setText(null);
-                }
-            }
-
-            for(int i = 0; i < rows; i++) {
-                for(int j = 0; j < columns; j++) {
-                    if(tf[i][j].isEditable())
-                        correct = false;
-                }
-            }
-            if (correct) {
-                for (int i = 0; i < rows; i++) {
-                    for (int j = 0; j < columns; j++) {
-                        pnlCenter.remove(tf[i][j]);
-                        pnlCenter.add(lbl[i][j]);
-                    }
-                }
-
-                pnlCenter.revalidate();
-                pnlCenter.repaint();
-                timer.stop();
-
-                try {
-                    StateMachine.ChangeWindow("game","winnerInterface");
-                    StateMachine.close("game");
-                } catch (Exception ex) {
-                    throw new RuntimeException(ex);
-                }
-            }
+        	if(block == false) {
+	            boolean correct = true;
+	            boolean alreadyIncremented = false;
+	            int half = (int) rows/2,  threeQuarters = (int)rows * 3 / 4;
+	            for (int i = 0; i < rows; i++) {
+	                int cont = 0;
+	                for (int j = 0; j < columns; j++) {
+	                    if (tf[i][j].getText().equals(lbl[i][j].getText())) {
+	                        tf[i][j].setEditable(false);
+	                        tf[i][j].setBackground(Color.YELLOW);
+	                        lbl[i][j].setBackground(Color.GREEN.darker().brighter().brighter());
+	                        // GREEN IF COMPLETE
+	                       if (!tf[i][j].isEditable()) {
+	                            cont++;
+	                            // All columns are yellow
+	                            if(cont==columns) {
+	                                for (int n = 0; n < columns; n++) {
+	                                    tf[i][n].setBackground(Color.green);
+	                                    if(!alreadyIncremented) {
+	                                    	guessedWords++;
+	                                    	alreadyIncremented = true;
+	                                    }
+	                                }
+	                                //num.
+	                                int max;
+	                                if(guessedWords <= half) 
+	                                	max = 3;
+	                                else if(guessedWords > half && guessedWords <= threeQuarters)
+	                                	max = 1;
+	                                else
+	                                	max = 0;
+	                                if(max != 0) {
+		                                if(done[i] == false) {
+		                                    for (int s = 0; s < max; s++) {
+		                                        boolean k = false;
+		
+		                                        while (k == false) {
+		                                            int r = new Random().nextInt(rows);
+		                                            int c = new Random().nextInt(columns);
+		
+		                                            if (tf[r][c].getText().equals("")) {
+		                                                tf[r][c].setText(lbl[r][c].getText());
+		                                                tf[r][c].setBackground(Color.YELLOW);
+		                                                tf[r][c].setEditable(false);
+		                                                lbl[i][j].setBackground(Color.GREEN.darker().brighter().brighter());
+		                                                k = true;
+		                                                done[i] = true;
+		                                                
+		                                                int check = 0;
+		                                                
+		                                                for(int p = 0; p < columns; p++) {
+		                                                	if (!tf[i][j].isEditable()) {
+		                                                		check++;
+		                                                        // All columns are yellow
+		                                                        if (check == columns) {
+		                                                            for (int n = 0; n < columns; n++) {
+		                                                                tf[i][n].setBackground(Color.green);
+		                                                            }
+		                                                        }
+		                                                	}else
+		                                                		check = 0;
+		                                                }
+		                                            }
+		                                        }
+		                                    }
+		                                }
+	                                }
+	                            }
+	                        } else cont = 0;
+	                    } else  tf[i][j].setText(null);
+	                }
+	            }
+	
+	            for(int i = 0; i < rows; i++) {
+	            	for(int j = 0; j < columns; j++) {
+	            		if(tf[i][j].isEditable()) 
+	            			correct = false;
+	            	}
+	            }
+	            if (correct == true) {
+	                for (int i = 0; i < rows; i++) {
+	                    for (int j = 0; j < columns; j++) {
+	                        pnlCenter.remove(tf[i][j]);
+	                        pnlCenter.add(lbl[i][j]);
+	                    }
+	                }
+	
+	                pnlCenter.revalidate();
+	                pnlCenter.repaint();
+	                timer.stop();
+	                
+	                finish = true;
+	                
+	                Winner winner = new Winner(this, timer.getCount());
+	               	winner.setVisible(true);
+	                setVisible(false);      
+	            }
+        	}else {
+        		 Winner winner = new Winner(this, timer.getCount());
+	             winner.setVisible(true);
+	             setVisible(false);     
+        	}
         });
 
         lblHelp = new JLabel("Helps remaining: " + nHelps);
