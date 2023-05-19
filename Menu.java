@@ -50,12 +50,13 @@ public class Menu extends JFrame {
             System.out.println( "rows: "+dimension[0]+" columns: "+dimension[1]);
             new GUI(file,Integer.parseInt(dimension[0]),Integer.parseInt(dimension[1]));
             
-          
-            
+            ProgressBar bar = new ProgressBar(file, rows, line.length());
+        	bar.setVisible(true);	
+           
             dispose();
         });
         
-       
+        buttonKey(btnStart, KeyEvent.VK_ENTER);
         add(btnStart);
 
         setTitle("Welcome to crossWord!");
@@ -67,6 +68,23 @@ public class Menu extends JFrame {
         setVisible(true);
     }
     
+    public static void buttonKey(JButton btn, int key) {
+	    Action action = new AbstractAction() {
+			@Override
+	         public void actionPerformed(ActionEvent e) {
+	            btn.doClick();
+	         }
+	    };
+
+	    // String actionKey = "buttonAction" + key;
+	        
+	    // Set the btn actionCommand to the key to identify which action should be performed 
+	    btn.setActionCommand("buttonAction" + key);
+	       
+	    // Associate the action object to the keyboard key
+	    btn.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(key, 0), "buttonAction" + key);
+	    btn.getActionMap().put("buttonAction" + key, action);
+	}
 
     public static void main(String[] args) {
         new Menu();
