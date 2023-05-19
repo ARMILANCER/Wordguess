@@ -26,10 +26,12 @@ public class Winner extends JFrame{
 		
 		btnExit = new JButton("x");
 		btnExit.setBackground(Color.BLUE);
-        btnExit.setForeground(new Color(255, 215, 0));
-        btnExit.setOpaque(true);
-        btnExit.setBorderPainted(false);
-        btnExit.setFont(new Font("Times New Roman", Font.BOLD, 20));
+        	btnExit.setForeground(new Color(255, 215, 0));
+       		btnExit.setOpaque(true);
+       		btnExit.setBorderPainted(false);
+       		btnExit.setFont(new Font("Times New Roman", Font.BOLD, 20));
+		btnExit.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, 0), "none");
+       			btnExit.setFocusPainted(false)
 		btnExit.addActionListener(e ->{
 			System.exit(0);
 		});
@@ -62,9 +64,9 @@ public class Winner extends JFrame{
 		else {
 			// Calculate the score
 			int penalty = (int) count / maxTime;
-            int score = (int) (maxPoints * (1 - penalty));
+           	 	int score = (int) (maxPoints * (1 - penalty));
            
-            lblPoints.setText("" + score);
+            		lblPoints.setText("" + score);
 		}
 		
 		// Add a empty space at the top
@@ -80,8 +82,6 @@ public class Winner extends JFrame{
 		
 		pnlSouth = new JPanel(new BorderLayout());
 		pnlSouth.setBackground(Color.BLUE);
-		/*pnlNew = new JPanel(new FlowLayout());
-		pnlNew.setBackground(Color.BLUE);*/
 
 		btnBack = new JButton("Back");
 		btnBack.setBackground(Color.BLUE);
@@ -89,6 +89,8 @@ public class Winner extends JFrame{
 		btnBack.setOpaque(true);
 		btnBack.setBorderPainted(false);
 		btnBack.setFont(new Font("Times New Roman", Font.BOLD, 20));
+		btnBack.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, 0), "none");
+		btnBack.setFocusPainted(false);
 		btnBack.addActionListener(e ->{
 			gui.setVisible(true);
 			dispose();
@@ -100,20 +102,18 @@ public class Winner extends JFrame{
 		btnNew.setOpaque(true);
 		btnNew.setBorderPainted(false);
 		btnNew.setFont(new Font("Times New Roman", Font.BOLD, 20));
+		btnNew.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, 0), "none");
+		btnNew.setFocusPainted(false);
 		btnNew.addActionListener(e ->{
 			dispose();
 			new Menu();
 		});
-	
-		//pnlNew.add(btnNew);
 		
 		buttonKey(btnBack, KeyEvent.VK_LEFT);
 		buttonKey(btnNew, KeyEvent.VK_RIGHT);
 		buttonKey(btnExit, KeyEvent.VK_ESCAPE);
 		
 		pnlSouth.add(btnBack, BorderLayout.WEST);
-		//pnlBtn.add(pnlNew, BorderLayout.CENTER);
-		//pnlBtn.add(btnExit, BorderLayout.EAST);
 		pnlSouth.add(btnNew, BorderLayout.EAST);
 		
 		add(pnlNorth, BorderLayout.NORTH);
