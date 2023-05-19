@@ -49,6 +49,10 @@ public class Menu extends JFrame {
             }
             System.out.println( "rows: "+dimension[0]+" columns: "+dimension[1]);
             new GUI(file,Integer.parseInt(dimension[0]),Integer.parseInt(dimension[1]));
+            
+            ProgressBar bar = new ProgressBar(file, rows, line.length());
+        	bar.setVisible(true);
+            
             dispose();
         });
 
