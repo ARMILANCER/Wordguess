@@ -32,6 +32,8 @@ public class ProgressBar extends JFrame{
 		btnExit.setForeground(new Color(255, 215, 0));
 		btnExit.setBorderPainted(false);
 		btnExit.setFont(new Font("Times New Roman", Font.BOLD, 15));
+		btnExit.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, 0), "none");
+		btnExit.setFocusPainted(false);
 		btnExit.addActionListener(e ->{
 			System.exit(0);
 		});
