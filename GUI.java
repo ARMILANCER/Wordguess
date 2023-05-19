@@ -21,7 +21,7 @@ public class GUI extends JFrame {
     /// COMPONENT JFRAME
     ///////
     private static final long serialVersionUID = 1L;
-    private JPanel pnlCenter, pnlSouth, pnlBtn, pnlWest, pnlHelp, pnlShop, pnlNorth, pnlGame;
+    private JPanel pnlCenter, pnlSouth, pnlBtn, pnlWest, pnlHelp, pnlShop, pnlNorth, pnlGame, pnlCheck;
     private JTextField[][] tf;
     private JLabel[][] lbl;
     private JLabel lblHelp, lblPoints, lblGame;
@@ -41,6 +41,12 @@ public class GUI extends JFrame {
     // used in btnCheck to see if a line has already been completed
     private boolean[] done;
     private  int guessedWords=0;
+    // to see if the program is blocked due to time, if it is blocked the check open a new frame
+    private boolean block = false;  
+    // used in the gui's blockProgram function to print the showMessageDialog just one time
+    boolean show = false;
+    // to see if the game is finished, used to block the help if it is
+    private boolean finish = false;
 
     // constructor data
     private String file;
@@ -124,12 +130,14 @@ public class GUI extends JFrame {
                             // serve per capire quando è finito il gioco
                             lbl[i][j] = new JLabel(String.valueOf(word[0].charAt(j)));
                             lbl[i][j].setOpaque(true);
+                            lbl[i][j].setBackground(Color.RED);
                             lbl[i][j].setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
                             //
                             tf[i][j] = new JTextField();
                             tf[i][j].setHorizontalAlignment(JTextField.CENTER);
                             tf[i][j].setOpaque(true);
                             tf[i][j].setBackground(Color.CYAN);
+                            tf[i][j].setDocument(new Format(1));
                             tf[i][j].addActionListener(e->{
                                 
                             });
@@ -149,7 +157,9 @@ public class GUI extends JFrame {
         pnlBtn = new JPanel(new BorderLayout());
         pnlBtn.setBackground(Color.BLUE);
         pnlHelp = new JPanel(new GridLayout(2, 1));
-
+        pnlCheck = new JPanel(new FlowLayout());
+        pnlCheck.setBackground(Color.BLUE);
+        
         done = new boolean[rows];
         btnCheck = new JButton("Check");
         btnCheck.setBackground(Color.BLUE);
@@ -160,103 +170,114 @@ public class GUI extends JFrame {
 
         // CHECK
         btnCheck.addActionListener(e -> {
-            boolean correct = true;
-            boolean alreadyIncremented = false;
-            int half = (int) rows/2,  threeQuarters = (int)rows * 3 / 4;
-            for (int i = 0; i < rows; i++) {
-                int cont = 0;
-                for (int j = 0; j < columns; j++) {
-                    if (tf[i][j].getText().equals(lbl[i][j].getText())) {
-                        tf[i][j].setEditable(false);
-                        tf[i][j].setBackground(Color.YELLOW);
-                        lbl[i][j].setBackground(Color.GREEN.darker().brighter().brighter());
-                        // GREEN IF COMPLETE
-                        if (!tf[i][j].isEditable()) {
-                            cont++;
-                            // All columns are yellow
-                            if(cont==columns) {
-                                for (int n = 0; n < columns; n++) {
-                                    tf[i][n].setBackground(Color.green);
-                                    if(!alreadyIncremented) {
-                                        guessedWords++;
-                                        alreadyIncremented = true;
+            if(block == false) {
+                boolean correct = true;
+                boolean alreadyIncremented = false;
+                int half = (int) rows/2,  threeQuarters = (int)rows * 3 / 4;
+               
+                for (int i = 0; i < rows; i++) {
+                    int cont = 0;
+                    for (int j = 0; j < columns; j++) {
+                        if (tf[i][j].getText().equals(lbl[i][j].getText())) {
+                            tf[i][j].setEditable(false);
+                            tf[i][j].setBackground(Color.YELLOW);
+                            lbl[i][j].setBackground(Color.GREEN.darker().brighter().brighter());
+                            // GREEN IF COMPLETE
+                            if (!tf[i][j].isEditable()) {
+                                cont++;
+                                // All columns are yellow
+                                if(cont==columns) {
+                                    for (int n = 0; n < columns; n++) {
+                                        tf[i][n].setBackground(Color.green);
+                                        if(!alreadyIncremented) {
+                                            guessedWords++;
+                                            alreadyIncremented = true;
+                                        }
                                     }
-                                }
-                                //num.
-                                int max;
-                                if(guessedWords <= half)
-                                    max = 3;
-                                else if(guessedWords > half && guessedWords <= threeQuarters)
-                                    max = 1;
-                                else
-                                    max = 0;
-                                if(max != 0) {
-                                    if(done[i] == false) {
-                                        for (int s = 0; s < max; s++) {
-                                            boolean k = false;
+                                    //num.
+                                    int max;
+                                    if(guessedWords <= half)
+                                        max = 3;
+                                    else if(guessedWords > half && guessedWords <= threeQuarters)
+                                        max = 1;
+                                    else
+                                        max = 0;
+                                    
+                                            if(max != 0) {
+                                        if(done[i] == false) {
+                                            for (int s = 0; s < max; s++) {
+                                                boolean k = false;
 
-                                            while (k == false) {
-                                                int r = new Random().nextInt(rows);
-                                                int c = new Random().nextInt(columns);
+                                                while (k == false) {
+                                                    int r = new Random().nextInt(rows);
+                                                    int c = new Random().nextInt(columns);
 
-                                                if (tf[r][c].getText().equals("")) {
-                                                    tf[r][c].setText(lbl[r][c].getText());
-                                                    tf[r][c].setBackground(Color.YELLOW);
-                                                    tf[r][c].setEditable(false);
-                                                    lbl[i][j].setBackground(Color.GREEN.darker().brighter().brighter());
-                                                    k = true;
-                                                    done[i] = true;
+                                                    if (tf[r][c].getText().equals("")) {
+                                                        tf[r][c].setText(lbl[r][c].getText());
+                                                        tf[r][c].setBackground(Color.YELLOW);
+                                                        tf[r][c].setEditable(false);
+                                                        lbl[i][j].setBackground(Color.GREEN.darker().brighter().brighter());
+                                                        k = true;
+                                                        done[i] = true;
 
-                                                    int check = 0;
+                                                        int check = 0;
 
-                                                    for(int p = 0; p < columns; p++) {
-                                                        if (!tf[i][j].isEditable()) {
-                                                            check++;
-                                                            // All columns are yellow
-                                                            if (check == columns) {
-                                                                for (int n = 0; n < columns; n++) {
-                                                                    tf[i][n].setBackground(Color.green);
+                                                        for(int p = 0; p < columns; p++) {
+                                                            if (!tf[i][j].isEditable()) {
+                                                                check++;
+                                                                // All columns are yellow
+                                                                if (check == columns) {
+                                                                    for (int n = 0; n < columns; n++) {
+                                                                        tf[i][n].setBackground(Color.green);
+                                                                    }
                                                                 }
-                                                            }
-                                                        }else
-                                                            check = 0;
+                                                            }else
+                                                                check = 0;
+                                                        }
                                                     }
                                                 }
                                             }
                                         }
                                     }
                                 }
-                            }
-                        } else cont = 0;
-                    } else  tf[i][j].setText(null);
-                }
-            }
-
-            for(int i = 0; i < rows; i++) {
-                for(int j = 0; j < columns; j++) {
-                    if(tf[i][j].isEditable())
-                        correct = false;
-                }
-            }
-            if (correct) {
-                for (int i = 0; i < rows; i++) {
-                    for (int j = 0; j < columns; j++) {
-                        pnlCenter.remove(tf[i][j]);
-                        pnlCenter.add(lbl[i][j]);
+                            } else cont = 0;
+                        } else  tf[i][j].setText(null);
                     }
                 }
 
-                pnlCenter.revalidate();
-                pnlCenter.repaint();
-                timer.stop();
-
-                try {
-                    StateMachine.ChangeWindow("game","winnerInterface");
-                    StateMachine.close("game");
-                } catch (Exception ex) {
-                    throw new RuntimeException(ex);
+                for(int i = 0; i < rows; i++) {
+                    for(int j = 0; j < columns; j++) {
+                        if(tf[i][j].isEditable())
+                            correct = false;
+                    }
                 }
-            }
+                if (correct) {
+                    for (int i = 0; i < rows; i++) {
+                        for (int j = 0; j < columns; j++) {
+                            pnlCenter.remove(tf[i][j]);
+                            pnlCenter.add(lbl[i][j]);
+                        }
+                    }
+
+                    pnlCenter.revalidate();
+                    pnlCenter.repaint();
+                    timer.stop();
+
+                    finish = true;
+	                blockProgram(this, 1);
+                    
+                    try {
+                        StateMachine.ChangeWindow("game","winnerInterface");
+                        StateMachine.close("game");
+                    } catch (Exception ex) {
+                        throw new RuntimeException(ex);
+                    }
+                }
+            }else {
+        		 Winner winner = new Winner(this, timer.getCount());
+	             winner.setVisible(true);
+	             setVisible(false);     
+        	}
         });
 
         lblHelp = new JLabel("Helps remaining: " + nHelps);
@@ -271,28 +292,55 @@ public class GUI extends JFrame {
         btnHelp.setBorderPainted(false);
         btnHelp.setOpaque(true);
         btnHelp.addActionListener(e -> {
-            if (nHelps > 0) {
-                int n, m;
+            if(!finish) {
+        		int emptyCells = 0;
+	        	for(int i = 0; i < rows; i++) {
+	        		for(int j = 0; j < columns; j++) {
+	        			String color = "" + lbl[i][j].getBackground();
+	        			if(color.equals("java.awt.Color[r=255,g=0,b=0]")) 
+	        				emptyCells++;	        			
+	        		}
+	        	}
+                if (nHelps > 0) {
+                    int n, m;
+                    
+                    if(emptyCells >= 3) {
+                        for (int i = 0; i < 3; i++) {
+                            boolean different = false;
 
-                for (int i = 0; i < 3; i++) {
-                    boolean different = false;
+                            while (!different) {
+                                n = new Random().nextInt(rows);
+                                m = new Random().nextInt(columns);
+                                if (tf[n][m].getText().equals("")) {
+                                    tf[n][m].setText(lbl[n][m].getText());
+                                    tf[n][m].setBackground(Color.YELLOW);
+                                    tf[n][m].setEditable(false);
+                                    different = true;
+                                }
+                            }
+                        }else {
+	                	boolean different = false;
+	            		
+	                    while (different == false) {
+	                        n = new Random().nextInt(rows);
+	                        m = new Random().nextInt(columns);
+	
+	                        if (tf[n][m].getText().equals("")) {
+	                            tf[n][m].setText(lbl[n][m].getText());
+	                            tf[n][m].setBackground(Color.YELLOW);
+	                            lbl[n][m].setBackground(Color.GREEN.darker().brighter().brighter());	
+	                            tf[n][m].setEditable(false);
+	                            different = true;
+	                        }
+	                    }
+	                        
+	                }
 
-                    while (!different) {
-                        n = new Random().nextInt(rows);
-                        m = new Random().nextInt(columns);
-                        if (tf[n][m].getText().equals("")) {
-                            tf[n][m].setText(lbl[n][m].getText());
-                            tf[n][m].setBackground(Color.YELLOW);
-                            tf[n][m].setEditable(false);
-                            different = true;
-                        }
-                    }
+                    nHelps--;
+                    lblHelp.setText("Helps remaining: " + nHelps);
+                } else {
+                    JOptionPane.showMessageDialog(null, "Helps finished, buy more", "Conferma", JOptionPane.INFORMATION_MESSAGE);
                 }
-
-                nHelps--;
-                lblHelp.setText("Helps remaining: " + nHelps);
-            } else {
-                JOptionPane.showMessageDialog(null, "Helps finished, buy more", "Conferma", JOptionPane.INFORMATION_MESSAGE);
             }
         });
 
@@ -325,10 +373,24 @@ public class GUI extends JFrame {
         ta = new JTextArea();
         ta.setBackground(Color.BLUE);
         ta.setForeground(new Color(255, 215, 0));
+        ta.setLineWrap(true);
+        ta.setWrapStyleWord(true); 
         ta.setFont(new Font("Arial", Font.BOLD, 20));
         ta.setEditable(false);
 
-        pnlBtn.add(btnCheck, BorderLayout.CENTER);
+        // Associating btnHelp botton with the key: ","
+        buttonKey(btnHelp, KeyEvent.VK_COMMA);
+        // Associating btnCheck botton with the key: "Enter"
+        buttonKey(btnCheck, KeyEvent.VK_ENTER);
+        // Associating btnShop botton with the key: "."
+        buttonKey(btnShop, KeyEvent.VK_PERIOD);
+        //// Associating btnShop botton with the key: "ESC"
+        buttonKey(btnExit, KeyEvent.VK_ESCAPE);
+            
+         pnlCheck.add(btnCheck);
+        
+        pnlBtn.add(pnlCheck, BorderLayout.CENTER);
+        //pnlBtn.add(btnCheck, BorderLayout.CENTER);
         pnlBtn.add(pnlHelp, BorderLayout.WEST);
         pnlBtn.add(pnlShop, BorderLayout.EAST);
         pnlSouth.add(pnlBtn);
@@ -359,5 +421,54 @@ public class GUI extends JFrame {
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setUndecorated(true);
         setVisible(true);
+    }
+                                  
+                                  public void blockProgram(GUI gui, int n) {	
+    	btnHelp.setEnabled(false);
+    	btnShop.setEnabled(false);
+    	ta.setText(null);
+    	
+    	for(int i = 0; i < tf.length; i++) {
+    		btnHint[i].setEnabled(false);
+    	}
+    	
+    	for(int i = 0; i  < tf.length; i++) {
+    		for(int j = 0; j < tf[0].length; j++) {
+    			pnlCenter.remove(tf[i][j]);
+                pnlCenter.add(lbl[i][j]);
+            }
+        }
+        pnlCenter.revalidate();
+        pnlCenter.repaint();
+        
+        if(show == false) {
+        	if(n == 2)
+        		JOptionPane.showMessageDialog(null, "You've runned out of time!");
+	        Winner winner = new Winner(this, timer.getCount());
+	       	winner.setVisible(true);
+	       	setVisible(false);
+        }
+        
+        show = true;
+        block = true;
+    }
+    
+    // Function to associate a keyboard key to a button
+    public static void buttonKey(JButton btn, int key) {
+    	Action action = new AbstractAction() {
+			@Override
+            public void actionPerformed(ActionEvent e) {
+            	btn.doClick();
+            }
+        };
+
+        // String actionKey = "buttonAction" + key;
+        
+        // Set the btn actionCommand to the key to identify which action should be performed 
+        btn.setActionCommand("buttonAction" + key);
+       
+        // Associate the action object to the keyboard key
+        btn.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(key, 0), "buttonAction" + key);
+        btn.getActionMap().put("buttonAction" + key, action);
     }
 }
