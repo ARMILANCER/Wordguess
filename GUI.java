@@ -89,7 +89,10 @@ public class GUI extends JFrame {
         btnExit.setForeground(new Color(255, 215, 0));
         btnExit.setOpaque(true);
         btnExit.setBorderPainted(false);
-        btnExit.setFont(new Font("Arial", Font.BOLD, 20));
+        btnExit.setFont(new Font("Times New Roman", Font.BOLD, 20));
+        //btnExit.setFont(new Font("Arial", Font.BOLD, 20));
+        btnExit.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, 0), "none");
+        btnExit.setFocusPainted(false);
         btnExit.addActionListener(e ->{
             System.exit(0);
         });
@@ -130,6 +133,11 @@ public class GUI extends JFrame {
                             tf[i][j].setHorizontalAlignment(JTextField.CENTER);
                             tf[i][j].setOpaque(true);
                             tf[i][j].setBackground(Color.CYAN);
+                            tf[i][j].setDocument(new Format(1));
+                            
+                            if (tf[i][j].getText().isEmpty()) 
+                            	tf[i][j].setBorder(new LineBorder(new Color(102, 0, 102)));
+                            
                             tf[i][j].addActionListener(e->{
                                 
                             });
@@ -156,8 +164,11 @@ public class GUI extends JFrame {
         btnCheck.setForeground(new Color(255, 215, 0));
         btnCheck.setOpaque(true);
         btnCheck.setBorderPainted(false);
-        btnCheck.setFont(new Font("Arial", Font.BOLD, 20));
-
+        //btnCheck.setFont(new Font("Arial", Font.BOLD, 20));
+        btnCheck.setFont(new Font("Times New Roman", Font.BOLD, 20));
+        btnCheck.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, 0), "none");
+        btnCheck.setFocusPainted(false);
+        
         // CHECK
         btnCheck.addActionListener(e -> {
             boolean correct = true;
@@ -270,6 +281,8 @@ public class GUI extends JFrame {
         btnHelp.setBackground(Color.BLUE);
         btnHelp.setBorderPainted(false);
         btnHelp.setOpaque(true);
+        btnHelp.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, 0), "none");
+        btnHelp.setFocusPainted(false);
         btnHelp.addActionListener(e -> {
             if (nHelps > 0) {
                 int n, m;
@@ -311,7 +324,10 @@ public class GUI extends JFrame {
         btnShop.setForeground(new Color(255, 215, 0));
         btnShop.setOpaque(true);
         btnShop.setBorderPainted(false);
-        btnShop.setFont(new Font("Arial", Font.BOLD, 20));
+        //btnShop.setFont(new Font("Arial", Font.BOLD, 20));
+        btnShop.setFont(new Font("Times New Roman", Font.BOLD, 20));
+        btnShop.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, 0), "none");
+        btnShop.setFocusPainted(false);
         btnShop.addActionListener(e ->{
             Shop shop = new Shop(points,nHelps,lblHelp,lblPoints);
             shop.action();
@@ -325,7 +341,8 @@ public class GUI extends JFrame {
         ta = new JTextArea();
         ta.setBackground(Color.BLUE);
         ta.setForeground(new Color(255, 215, 0));
-        ta.setFont(new Font("Arial", Font.BOLD, 20));
+       // ta.setFont(new Font("Arial", Font.BOLD, 20));
+        ta.setFont(new Font("Times New Roman", Font.BOLD, 20));
         ta.setEditable(false);
 
         pnlBtn.add(btnCheck, BorderLayout.CENTER);
@@ -338,12 +355,18 @@ public class GUI extends JFrame {
         pnlWest.setBackground(Color.BLUE);
 
         btnHint = new JButton[rows];
-
-
         for (int i = 0; i < rows; i++) {
             int j=i;
-            btnHint[i] = new JButton("Row " + (i + 1));
+            btnHint[i] = new JButton("Word " + (i + 1));
+            btnHint[i].setBackground(Color.BLUE);
+            btnHint[i].setForeground(new Color(255, 215, 0));
+            btnHint[i].setBorderPainted(false);
+            btnHint[i].setFont(new Font("Times New Roman", Font.BOLD, 20));
+            btnHint[i].getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, 0), "none");
+            btnHint[i].setFocusPainted(false);
+            
             pnlWest.add(btnHint[i]);
+            
             btnHint[i].addActionListener(e -> {
                 ta.setText(question.get(j));
             });
@@ -358,6 +381,6 @@ public class GUI extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setUndecorated(true);
-        setVisible(true);
+       // setVisible(true);
     }
 }
