@@ -35,7 +35,10 @@ public class Menu extends JFrame {
         btnStart.setFont(new Font("Arial", Font.BOLD, 20));
         // btnStart.setBounds(150, 200, 100, 30);
         btnStart.setBounds(655,615 , 130, 30);
-  
+        // Remove the default possibility to activate the button with the key "SPACE"
+        btnStart.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, 0), "none");
+        // Remove the default selection box
+        btnStart.setFocusPainted(false);
         // Start game
         btnStart.addActionListener(e ->{
             int rand = new Random().nextInt(5) + 1;
