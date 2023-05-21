@@ -46,14 +46,25 @@ public class ProgressBar extends JFrame{
 		//fine
 		btnExit.addActionListener(e ->{
 		//nuova parte
-			try {
-				BufferedWriter writer = new BufferedWriter(new FileWriter("Numbers.txt"));
-
-				for(int i = 0; i < originalFileContent.size(); i++) {
-					writer.write(originalFileContent.get(i));
-					writer.newLine();
-				}
-
+			// revert the content of numbers to the default one
+        	try {
+    			BufferedWriter writer = new BufferedWriter(new FileWriter("Numbers.txt"));
+    			
+    			for(int i = 0; i < originalFileContent.size(); i++) {
+    				writer.write(originalFileContent.get(i));
+    				writer.newLine();
+    			}
+    			
+    			writer.close();
+    		}catch(IOException e1) {
+    			e1.printStackTrace();
+    		}
+        	// empty the file UsedFiles
+        	try {
+				BufferedWriter writer = new BufferedWriter(new FileWriter("UsedFiles.txt"));
+				
+				writer.write("");
+				
 				writer.close();
 			}catch(IOException e1) {
 				e1.printStackTrace();
