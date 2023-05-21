@@ -2,6 +2,8 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.PlainDocument;
 import javax.swing.text.AttributeSet;
 
+// se vuoi metti tutto in uno : import javax.swing.text.*;
+
 public class Format extends PlainDocument {
 	/**
 	 * 
@@ -25,9 +27,4 @@ public class Format extends PlainDocument {
 	// with attr we define how the text should be formatted, but in this case we don't define anything about it
 			super.insertString(offset, str.toUpperCase(), attr);
 	}
-	
-	/*public void replace(DocumentFilter.FilterBypass fb, int offset, int length, String text, AttributeSet attrs) throws BadLocationException {
-		// With text.toUpperCase() we convert the text to uppercase before replace it
-		fb.replace(offset, length, text.toUpperCase(), attrs);
-	}*/
 }
