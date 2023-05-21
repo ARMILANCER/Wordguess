@@ -10,30 +10,75 @@ public class Winner extends JFrame{
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-
-	private JPanel pnlSouth, pnlCenter, pnlNew, pnlNorth;
+	//eliminato il pnlNew
+	private JPanel pnlSouth, pnlCenter, pnlNorth;
 	private JLabel lblPoints, lblResult;
 	private JButton btnBack, btnNew, btnExit;
 	
 	private final int maxPoints = 300;
-	private final int maxTime = 5; //10 minuti
+	//nuova parte
+	private final int maxTime = 600; //10 minuti
+	private double remainingTime;
+	private int score;
+	private Vector<String> fileContent;
+	private Vector<String> originalFileContent;
+	
 
-	public Winner(GUI gui, int count) {
+	//public Winner(GUI gui, int count) {
+	public Winner(GUI gui, int count, int points, Vector<String> fileContent, Vector<String> originalFileContent) {
+		this.fileContent = fileContent;
+		this.originalFileContent = originalFileContent;
+	//fine
 		setLayout(new BorderLayout());
 		setTitle("Winner");
 		
 		pnlNorth = new JPanel(new BorderLayout());
 		
-		btnExit = new JButton("x");
+		btnExit = new JButton("X");
 		btnExit.setBackground(Color.BLUE);
-        btnExit.setForeground(new Color(255, 215, 0));
-        btnExit.setOpaque(true);
-        btnExit.setBorderPainted(false);
-        btnExit.setFont(new Font("Times New Roman", Font.BOLD, 20));
+		//cambiato il colore del testo
+        	btnExit.setForeground(Color.BLACK);
+        	btnExit.setOpaque(true);
+        	btnExit.setBorderPainted(false);
+       		btnExit.setFont(new Font("Times New Roman", Font.BOLD, 20));
+		//nuova parte
+		btnExit.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, 0), "none");
+       		btnExit.setFocusPainted(false);
+		//fine
 		btnExit.addActionListener(e ->{
+			//nuova parte
+			try {
+    			BufferedWriter writer = new BufferedWriter(new FileWriter("Numbers.txt"));
+    			
+    			for(int i = 0; i < originalFileContent.size(); i++) {
+    				writer.write(originalFileContent.get(i));
+    				writer.newLine();
+    			}
+    			
+    			writer.close();
+    		}catch(IOException e1) {
+    			e1.printStackTrace();
+    		}
+			//fine
 			System.exit(0);
 		});
+		//nuova parte
+		// When the mouse cursor pass on the button X, the background color get changed to red
+		btnExit.addMouseListener(new MouseAdapter(){
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				btnExit.setBackground(Color.RED);
+			}
+
+			@Override
+			public void mouseExited(MouseEvent e) {
+				btnExit.setBackground(Color.BLUE);
+			}
+					
+		});
 		
+		pnlNorth.add(btnExit, BorderLayout.EAST);
+		//fine
 		pnlCenter = new JPanel();
 		pnlCenter.setLayout(new BoxLayout(pnlCenter, BoxLayout.Y_AXIS));
 		pnlCenter.setBackground(Color.BLUE);
@@ -55,7 +100,7 @@ public class Winner extends JFrame{
 		lblPoints.setForeground(new Color(255, 215, 0));
 		lblPoints.setFont(new Font("Times New Roman", Font.BOLD, 20));
 		lblPoints.setAlignmentX(JLabel.CENTER_ALIGNMENT);
-		if(count <= 0)
+		/*if(count <= 0)
 			lblPoints.setText("" + 0);
 		else if(count >= maxTime) 
 			lblPoints.setText("" + maxTime);
@@ -65,7 +110,41 @@ public class Winner extends JFrame{
             int score = (int) (maxPoints * (1 - penalty));
            
             lblPoints.setText("" + score);
+		}*/
+		//parte nuova
+		if(count <= 0)
+			lblPoints.setText("Unlucky, you got " + 0 + " points");
+		else if(count >= maxTime) 
+			lblPoints.setText("You win " + maxTime + " points!");
+		else {
+			// Calculate the score
+			remainingTime = (double) count / maxTime;
+            		score = (int) (maxPoints *  remainingTime);
+           
+            		lblPoints.setText("You win " + score + " points! ");
 		}
+		
+		score += points;
+		// change total points in the vector
+		for(int i = 0; i < fileContent.size(); i++) {
+			if(fileContent.get(i).equals("POINTS"))
+				fileContent.set(i + 1, "" + score);
+       		}
+		
+		// change the content of the whole file
+		try {
+			BufferedWriter writer = new BufferedWriter(new FileWriter("Numbers.txt"));
+			
+			for(int i = 0; i < fileContent.size(); i++) {
+				writer.write(fileContent.get(i));
+				writer.newLine();
+			}
+			
+			writer.close();
+		}catch(IOException e1) {
+			e1.printStackTrace();
+		}
+		//fine
 		
 		// Add a empty space at the top
 		pnlCenter.add(Box.createVerticalGlue());
@@ -80,8 +159,6 @@ public class Winner extends JFrame{
 		
 		pnlSouth = new JPanel(new BorderLayout());
 		pnlSouth.setBackground(Color.BLUE);
-		/*pnlNew = new JPanel(new FlowLayout());
-		pnlNew.setBackground(Color.BLUE);*/
 
 		btnBack = new JButton("Back");
 		btnBack.setBackground(Color.BLUE);
@@ -89,6 +166,23 @@ public class Winner extends JFrame{
 		btnBack.setOpaque(true);
 		btnBack.setBorderPainted(false);
 		btnBack.setFont(new Font("Times New Roman", Font.BOLD, 20));
+		//nuova parte
+		btnBack.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, 0), "none");
+		btnBack.setFocusPainted(false);
+		btnBack.addMouseListener(new MouseAdapter() {
+
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				btnBack.setBackground(new Color(0, 51, 204));
+			}
+
+			@Override
+			public void mouseExited(MouseEvent e) {
+				btnBack.setBackground(Color.BLUE);
+			}
+        	
+        	});
+		//fine
 		btnBack.addActionListener(e ->{
 			gui.setVisible(true);
 			dispose();
@@ -100,20 +194,38 @@ public class Winner extends JFrame{
 		btnNew.setOpaque(true);
 		btnNew.setBorderPainted(false);
 		btnNew.setFont(new Font("Times New Roman", Font.BOLD, 20));
+		//nuova parte
+		btnNew.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, 0), "none");
+		btnNew.setFocusPainted(false);
+		btnNew.addMouseListener(new MouseAdapter() {
+
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				btnNew.setBackground(new Color(0, 51, 204));
+			}
+
+			@Override
+			public void mouseExited(MouseEvent e) {
+				btnNew.setBackground(Color.BLUE);
+			}
+        	
+        	});
+		//fine
 		btnNew.addActionListener(e ->{
-			dispose();
 			new Menu();
+			dispose();
 		});
 	
-		//pnlNew.add(btnNew);
-		
+		//nuova parte (i commenti)
+		// associating btnBack to the keyboard key: "Left arrow"
 		buttonKey(btnBack, KeyEvent.VK_LEFT);
+		// associating btnNew to the keyboard key: "Right arrow"
 		buttonKey(btnNew, KeyEvent.VK_RIGHT);
+		// associating btnExit to the keyboard key: "Esc"
 		buttonKey(btnExit, KeyEvent.VK_ESCAPE);
+		//fine
 		
 		pnlSouth.add(btnBack, BorderLayout.WEST);
-		//pnlBtn.add(pnlNew, BorderLayout.CENTER);
-		//pnlBtn.add(btnExit, BorderLayout.EAST);
 		pnlSouth.add(btnNew, BorderLayout.EAST);
 		
 		add(pnlNorth, BorderLayout.NORTH);
@@ -124,18 +236,19 @@ public class Winner extends JFrame{
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setLocationRelativeTo(null);
 		setResizable(false);
+		//nuova parte
+		setUndecorated(true);
+		//fine
 	}
 	
-    public static void buttonKey(JButton btn, int key) {
-    	Action action = new AbstractAction() {
-			@Override
-            public void actionPerformed(ActionEvent e) {
-            	btn.doClick();
-            }
+   	public static void buttonKey(JButton btn, int key) {
+    		Action action = new AbstractAction() {
+		@Override
+           	 public void actionPerformed(ActionEvent e) {
+            		btn.doClick();
+            	}
         };
-
-        // String actionKey = "buttonAction" + key;
-        
+		
         // Set the btn actionCommand to the key to identify which action should be performed 
         btn.setActionCommand("buttonAction" + key);
        
