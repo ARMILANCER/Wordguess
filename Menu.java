@@ -12,9 +12,11 @@ public class Menu extends JFrame {
     private JButton btnStart;
     private ImageIcon image;
     //nuova parte
-    private String originalFile = "OriginalContent.txt";
     private Vector<String> originalFileContent;
     //fine
+	//nuova parte
+	private Vector<Integer> files;
+	//fine
     public Menu(){
         setLayout(null);
         image = new ImageIcon();
@@ -48,7 +50,7 @@ public class Menu extends JFrame {
         
         // Start game
         btnStart.addActionListener(e ->{
-            int rand = new Random().nextInt(5) + 1;
+            /*int rand = new Random().nextInt(5) + 1;
             String file = "" + rand + ".csv";
             String[] dimension = new String[2];
             try(BufferedReader buf = new BufferedReader(new FileReader(file))){
@@ -84,7 +86,109 @@ public class Menu extends JFrame {
         	ProgressBar bar = new ProgressBar(file, rows, firstLine.length(), originalFileContent);
         	bar.setVisible(true);	
          
-            dispose();
+            dispose();*/
+		//nuova parte
+		files = new Vector<>();
+        	// see which files have been used
+        	try (
+            		BufferedReader reader = new BufferedReader(new FileReader("UsedFiles.txt"))) {
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        int number = Integer.parseInt(line);
+                        files.add(number);
+                    }
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
+        	
+        	// control if the size of file exceeds or equals the number of fails, if it does it show a message with two option
+        	if(files.size() >= 5) {
+        		int btn = JOptionPane.showOptionDialog(null, "All files have been used!", "Custom Button Dialog", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, new String[]{"Refresh", "Close"}, "Refresh");
+        		// refresh button
+        		if(btn == 0) {
+        			try {
+        				BufferedWriter writer = new BufferedWriter(new FileWriter("UsedFiles.txt"));
+        				
+        				writer.write("");
+        				
+        				writer.close();
+        			}catch(IOException e1) {
+        				e1.printStackTrace();
+        			}
+        		// close button
+        		}else if(btn == 1) {
+        			try {
+        				BufferedWriter writer = new BufferedWriter(new FileWriter("UsedFiles.txt"));
+        				
+        				writer.write("");
+        				
+        				writer.close();
+        			}catch(IOException e1) {
+        				e1.printStackTrace();
+        			}
+        			System.exit(0);
+        		}	
+        	// if it doesn't exceed or it isn't equals, than it generate random a number that has not yet been used
+        	}else {
+        		int rand = new Random().nextInt(5) + 1;
+            	
+            	while(files.contains(rand))
+            		rand = new Random().nextInt(5) + 1;
+            	
+        		int rows = 0;
+	        	String file = "" + rand + ".txt", firstLine = null, nextLine = null;
+	        	try {
+					BufferedReader reader = new BufferedReader(new FileReader(file));
+					firstLine = reader.readLine();
+					nextLine = reader.readLine();
+					
+					while(nextLine != null) {
+						if(nextLine.equals("stop"))
+							rows++;
+						nextLine = reader.readLine();
+					}
+					
+					
+					
+					reader.close();
+	        	} catch (IOException  e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+	        	
+	        	try {
+	        		BufferedWriter writer = new BufferedWriter(new FileWriter("UsedFiles.txt", true));
+	        		
+	        		writer.append("" + rand);
+	        		writer.newLine();
+	        		writer.flush();
+	        		writer.close();
+	        	}catch(IOException e1) {
+	        		e1.printStackTrace();
+	        	}
+	        	
+	        	// set content of the file in the vector
+	        	originalFileContent = new Vector<>();
+	        	try {
+	        		BufferedReader reader = new BufferedReader(new FileReader("OriginalContent.txt"));
+	        		nextLine = reader.readLine();
+	        		
+	        		while(nextLine != null) {
+	        			originalFileContent.add(nextLine);
+	        			nextLine = reader.readLine();
+	        		}
+	        		
+	        		reader.close();
+	        	}catch(IOException e1) {
+	        		e1.printStackTrace();
+	        	}
+	        	
+	        	// open a new class
+	        	ProgressBar bar = new ProgressBar(file, rows, firstLine.length(), originalFileContent);
+	        	bar.setVisible(true);	
+	        	dispose();	
+        	}
+		//fine
         });
         
         buttonKey(btnStart, KeyEvent.VK_ENTER);
